@@ -46,11 +46,11 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/devops-project001:latest
     deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Deploy to development environment
-        run: echo "Deploying to development environment..."
-        # Aquí iría el código real para desplegar la aplicación
-        # Por ejemplo, usando SSH para conectar a un servidor y actualizar el contenedor
+      needs: build-and-push
+      runs-on: ubuntu-latest
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      steps:
+        - name: Deploy to development environment
+          run: echo "Deploying to development environment..."
+          # Aquí iría el código real para desplegar la aplicación
+          # Por ejemplo, usando SSH para conectar a un servidor y actualizar el contenedor
