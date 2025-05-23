@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime
-from api.database import Base
+from src.api.database import Base
 
 class Task(Base):
     __tablename__ = "tasks"

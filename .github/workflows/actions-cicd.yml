@@ -1,0 +1,56 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@2
+
+      - name: Set up Python
+        uses: actions/setup-python@2
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: | 
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: Run tests
+        run: |  
+          pytest
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    setps:
+      - uses: actions/checkout@2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@2
+      - name: Login to DockerHub
+        uses: docker/login-action@2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and push
+        uses: docker/build-push-action@2
+        with:
+          context: . 
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/devops-project001:latest
+    deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to development environment
+        run: echo "Deploying to development environment..."
+        # Aquí iría el código real para desplegar la aplicación
+        # Por ejemplo, usando SSH para conectar a un servidor y actualizar el contenedor
