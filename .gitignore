@@ -31,7 +31,6 @@ ENV/
 *.swo
 
 # Docker
-.dockerignore
 docker-compose.override.yml
 
 # Terraform

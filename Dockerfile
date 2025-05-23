@@ -1,0 +1,13 @@
+# ELEGIMOS LA IMAGEN BASE
+FROM python:3.10-slim
+# CREAMOS EL DIRECTORIO DE TRABAJO
+WORKDIR /app
+# INSTALAMOS LAS DEPENDENCIAS
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+# COPIAMOS EL CODIGO FUENTE
+COPY . .
+# EXPONEMOS EL PUERTO
+EXPOSE 8000
+# EJECUTAMOS LA APLICACION
+CMD ["python", "src/main.py"]

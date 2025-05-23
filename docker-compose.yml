@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=sqlite:///tasks.db
+    command: sh -c "python src/init_db.py && python src/main.py"
+    restart: unless-stopped
