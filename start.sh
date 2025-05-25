@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Asegurar que el directorio de datos existe y tiene los permisos correctos
-mkdir -p /data
-chmod 777 /data
-
 # Inicializar la base de datos
 python src/init_db.py
 

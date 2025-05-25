@@ -7,6 +7,6 @@ services:
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=sqlite:///data/tasks.db
-    command: sh -c "python src/init_db.py && python src/main.py"
+      - DATABASE_URL=sqlite:///tasks.db
+    command: sh -c "python src/init_db.py && python main.py"
     restart: unless-stopped
