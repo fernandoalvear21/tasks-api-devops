@@ -7,7 +7,7 @@ python src/init_db.py
 if [ $? -eq 0 ]; then
     echo "Base de datos inicializada correctamente"
     # Iniciar la aplicación
-    python src/main.py
+    python main.py
 else
     echo "Error al inicializar la base de datos"
     exit 1
