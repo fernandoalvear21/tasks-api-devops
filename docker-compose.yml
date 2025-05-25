@@ -8,5 +8,5 @@ services:
       - .:/app
     environment:
       - DATABASE_URL=sqlite:///tasks.db
-    command: sh -c "python src/init_db.py && python src/main.py"
+    command: ["/app/start.sh"]
     restart: unless-stopped

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from api.models.task import Task
-from api.models.schemas import TaskCreate, TaskUpdate
+from src.api.models.task import Task
+from src.api.models.schemas import TaskCreate, TaskUpdate
 
 def get_task(db: Session, task_id: int):
     return db.query(Task).filter(Task.id == task_id).first()

@@ -1,5 +1,5 @@
-from api.database import engine
-from api.models.task import Base
+from src.api.database import engine
+from src.api.models.task import Base
 
 def init_db():
     Base.metadata.create_all(bind=engine)
