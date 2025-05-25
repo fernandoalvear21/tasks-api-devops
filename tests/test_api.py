@@ -4,13 +4,13 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.main import app
+from main import app
 
 client = TestClient(app)
 
 # Prueba para la ruta principal
 def test_read_main():
-    response = client.get("/")
+    response = client.get("//")
     assert response.status_code == 200
     assert "Bienvenido a la API de Tareas de DevOps Maestro" in response.json()["message"]
 
