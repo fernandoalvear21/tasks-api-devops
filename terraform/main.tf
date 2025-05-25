@@ -56,26 +56,37 @@ resource "azurerm_linux_virtual_machine" "vm" {
     apt-get update
     apt-get upgrade -y
 
-    # Instalar git y docker
-    apt-get install -y git docker.io
+    # Instalar paquetes necesarios
+    apt-get install -y ca-certificates curl gnupg
 
-    # Instalar Docker Compose
-    apt-get install -y docker-compose-plugin
+    # Agregar el repositorio oficial de Docker
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-    # Iniciar y habilitar Docker
+    # Actualizar e instalar Docker
+    apt-get update
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    # Configurar permisos de Docker
+    usermod -aG docker ${var.vm_username}
     systemctl enable docker
     systemctl start docker
 
-    # Agregar usuario al grupo docker
-    sudo usermod -aG docker ${var.vm_username}
-
-    # Clonar el repositorio y construir la imagen
+    # Clonar el repositorio
     cd /home/${var.vm_username}
     git clone https://github.com/fernandoalvear21/tasks-api-devops.git app
+    chown -R ${var.vm_username}:${var.vm_username} /home/${var.vm_username}/app
     cd app
 
-    # Construir y ejecutar con Docker Compose
-    docker compose up -d
+    # Crear y configurar el directorio de datos
+    mkdir -p /data
+    chown -R ${var.vm_username}:${var.vm_username} /data
+    chmod 777 /data
+
+    # Ejecutar Docker Compose como el usuario correcto
+    su - ${var.vm_username} -c "cd /home/${var.vm_username}/app && docker compose up -d"
     EOF
   )
 }
