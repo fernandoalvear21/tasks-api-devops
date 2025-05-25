@@ -4,7 +4,7 @@ import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.main import app
+from main import app  # Cambiamos 'from src.main import app' a 'from main import app'
 
 client = TestClient(app)
 
