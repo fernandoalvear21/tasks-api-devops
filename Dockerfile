@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # CONFIGURAMOS PYTHONPATH
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 
 # CREAMOS DIRECTORIO PARA LA BASE DE DATOS Y DAMOS PERMISOS
 RUN mkdir -p /data && chmod 777 /data
