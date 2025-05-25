@@ -1,13 +1,31 @@
 # ELEGIMOS LA IMAGEN BASE
 FROM python:3.10-slim
+
 # CREAMOS EL DIRECTORIO DE TRABAJO
 WORKDIR /app
+
 # INSTALAMOS LAS DEPENDENCIAS
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
 # COPIAMOS EL CODIGO FUENTE
 COPY . .
+
+# CONFIGURAMOS PYTHONPATH
+ENV PYTHONPATH=/app/src
+
+# CREAMOS DIRECTORIO PARA LA BASE DE DATOS Y DAMOS PERMISOS
+RUN mkdir -p /data && chmod 777 /data
+
+# CONFIGURAMOS LA BASE DE DATOS
+ENV DATABASE_URL=sqlite:///data/tasks.db
+
 # EXPONEMOS EL PUERTO
 EXPOSE 8000
+
+# SCRIPT DE INICIO
+COPY start.sh .
+RUN chmod +x start.sh
+
 # EJECUTAMOS LA APLICACION
-CMD ["python", "src/main.py"]
+CMD ["/app/start.sh"]

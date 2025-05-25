@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from src.api.routes import tasks
+#from src.api.routes import tasks
+from api.routes import tasks 
 
 app = FastAPI(
     title="DevOps Maestro - API de Tareas",
