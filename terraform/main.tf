@@ -59,6 +59,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
     # Instalar git y docker
     apt-get install -y git docker.io
 
+    # Instalar Docker Compose
+    apt-get install -y docker-compose-plugin
+
     # Iniciar y habilitar Docker
     systemctl enable docker
     systemctl start docker
@@ -71,9 +74,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
     git clone https://github.com/fernandoalvear21/tasks-api-devops.git app
     cd app
 
-    # Construir y ejecutar el contenedor
-    docker build -t devops-project001 .
-    docker run -d -p 8000:8000 devops-project001
+    # Construir y ejecutar con Docker Compose
+    docker compose up -d
     EOF
   )
 }
