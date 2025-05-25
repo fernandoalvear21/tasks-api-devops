@@ -49,44 +49,54 @@ resource "azurerm_linux_virtual_machine" "vm" {
     #!/bin/bash
     set -e
 
-    # Esperar a que el sistema esté listo
-    sleep 30
+    # Esperar a que el sistema esté listo y los procesos de fondo terminen
+    sleep 60
 
     # Actualizar el sistema
-    apt-get update
-    apt-get upgrade -y
+    sudo apt-get update
+    sudo apt-get upgrade -y
 
-    # Instalar paquetes necesarios
-    apt-get install -y ca-certificates curl gnupg
+    # Instalar git y paquetes necesarios
+    sudo apt-get install -y ca-certificates curl gnupg
 
     # Agregar el repositorio oficial de Docker
-    install -m 0755 -d /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    chmod a+r /etc/apt/keyrings/docker.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # Esperar antes de continuar con la instalación
+    sleep 10
 
     # Actualizar e instalar Docker
-    apt-get update
-    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    sudo apt-get update
+    while ! sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; do
+      echo "Reintentando la instalación de Docker..."
+      sleep 10
+    done
 
     # Configurar permisos de Docker
-    usermod -aG docker ${var.vm_username}
-    systemctl enable docker
-    systemctl start docker
+    sudo usermod -aG docker ${var.vm_username}
+    sudo systemctl enable docker
+    sudo systemctl start docker
+
+    # Esperar a que Docker esté completamente iniciado
+    sleep 10
 
     # Clonar el repositorio
     cd /home/${var.vm_username}
     git clone https://github.com/fernandoalvear21/tasks-api-devops.git app
-    chown -R ${var.vm_username}:${var.vm_username} /home/${var.vm_username}/app
+    sudo chown -R ${var.vm_username}:${var.vm_username} /home/${var.vm_username}/app
     cd app
 
-    # Crear y configurar el directorio de datos
-    mkdir -p /data
-    chown -R ${var.vm_username}:${var.vm_username} /data
-    chmod 777 /data
+    # Asegurarse de que Docker esté funcionando antes de continuar
+    until sudo docker info > /dev/null 2>&1; do
+      echo "Esperando a que el servicio Docker esté disponible..."
+      sleep 5
+    done
 
-    # Ejecutar Docker Compose como el usuario correcto
-    su - ${var.vm_username} -c "cd /home/${var.vm_username}/app && docker compose up -d"
+    # Ejecutar Docker Compose
+    sudo docker compose up -d
     EOF
   )
 }
